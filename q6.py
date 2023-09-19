@@ -45,16 +45,10 @@ class DBMS:
 
             print("Name:", cur.fetchone()[0])
 
-            cur.execute(f"SELECT balance FROM {self.table_name} WHERE ac_no = ?",(ac_no,))
-            initial_bal = cur.fetchone()[0]
-            print("Initial Balance:", initial_bal)
-
             # deposit amount
             amount = int(input("Enter Amount to deposit: "))
-
-            new_bal = amount + initial_bal
             
-            cur.execute(f"UPDATE {self.table_name} SET balance = ? WHERE ac_no = ?",(new_bal,ac_no))
+            cur.execute(f"UPDATE {self.table_name} SET balance = balance + ? WHERE ac_no = ?",(amount,ac_no))
 
             print("Successfully deposited amount")
 
@@ -81,13 +75,12 @@ class DBMS:
 
             cur.execute(f"SELECT balance FROM {self.table_name} WHERE ac_no = ?",(ac_no,))
             initial_bal = cur.fetchone()[0]
-            print("Initial Balance:", initial_bal)
 
             # withdraw amount
             amount = int(input("Enter Amount to withdraw: "))
 
             # if withdrawal is possible
-            if amount < initial_bal:
+            if amount <= initial_bal:
                 new_bal = initial_bal - amount
                 
                 cur.execute(f"UPDATE {self.table_name} SET balance = ? WHERE ac_no = ?",(new_bal,ac_no))
@@ -135,7 +128,6 @@ class DBMS:
                 print(option,":",self.options.get(option))
             choice = input("Enter number corresponding to the desired option: ")
 
-            self.choosing = False
             if choice == '1': self.create_account()
             elif choice == '2': self.deposit()
             elif choice == '3': self.withdraw()
@@ -144,9 +136,9 @@ class DBMS:
                 print("Thank You")
                 cur.close()
                 conn.close()
-                quit()
-            else: self.choosing = True
-    
+                self.choosing = False
+            else: print("\nEnter correct choice")
+
 My_DBMS = DBMS()
 
 My_DBMS.home()
